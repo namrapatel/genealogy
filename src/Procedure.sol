@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import { Role } from "./Interaction.sol";
+
 abstract contract Procedure {
     address[] subProcedures;
 
@@ -8,5 +10,5 @@ abstract contract Procedure {
         subProcedures = _subProcedures;
     }
 
-    function execute(bytes memory arguments) public virtual;
+    function execute(Role[] memory roles) public virtual returns (bytes memory result);
 }
