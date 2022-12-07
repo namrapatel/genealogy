@@ -10,5 +10,5 @@ abstract contract Procedure {
         subProcedures = _subProcedures;
     }
 
-    function execute(Role[] memory roles) public virtual returns (bytes memory result);
+    function execute(Role[] memory roles) public virtual returns (bytes memory result) {}
 }

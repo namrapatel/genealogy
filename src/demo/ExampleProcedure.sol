@@ -2,11 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { Procedure } from "../Procedure.sol";
-
-struct Role {
-    string key;
-    uint256[] entities;
-}
+import { Role } from "../Interaction.sol";
 
 contract ExampleProcedure is Procedure {
 
@@ -14,6 +10,13 @@ contract ExampleProcedure is Procedure {
 
     function execute(Role[] memory roles) public override returns (bytes memory result) {
         // Loop through the subProcedures and execute them
-        return abi.encode("success");
+        string memory resultString = "";
+        return abi.encode(resultString);
+    }
+
+    function cool() public returns (address) {
+        // Do something cool
+        address cool = address(msg.sender);
+        return cool;
     }
 }
