@@ -35,7 +35,10 @@ abstract contract Interaction {
 
     }
 
-
     function execute() public virtual;
 
+    function transition() internal {
+        turnCounter++;
+    }
+    
 }
