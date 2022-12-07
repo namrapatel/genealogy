@@ -64,12 +64,12 @@ abstract contract Interaction {
 
     function execute(address stateAddress, uint8[] memory roleIndexes) internal {
         // Get the roles by the indexes
-        Role[] memory roles = new Role[](roleIndexes.length);
+        Role[] memory _roles = new Role[](roleIndexes.length);
         for(uint256 i = 0; i < roleIndexes.length; i++) {
             roles[i] = roles[roleIndexes[i]];
         }
 
-        bytes memory result = Procedure(stateAddress).execute(roles);
+        bytes memory result = Procedure(stateAddress).execute(_roles);
         transition(result);
     }
 
