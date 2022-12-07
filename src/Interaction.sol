@@ -7,7 +7,7 @@ import { addressToEntity } from "./utils.sol";
 // Temporary
 struct Role {
     string key;
-    uint256[] entities;
+    uint256 entity;
 }
 
 abstract contract Interaction {
@@ -24,7 +24,9 @@ abstract contract Interaction {
     mapping(uint256 => mapping(uint256 => uint256)) turnToEntityToCallsAllowed;
     // Turn Number -> Sequence of Entites taking turns
     mapping(uint256 => uint256[]) turnToSequenceOfEntitiesTakingTurns;
-    mapping(uint256 => uint8[]) turnToRoleIndexes;
+    mapping(uint256 => uint8[]) turnToRoleIndexes; 
+
+    // There needs to be a mapping between State Procedure
 
     constructor() {
         turnCounter = 0;

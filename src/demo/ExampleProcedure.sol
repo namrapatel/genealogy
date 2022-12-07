@@ -13,10 +13,4 @@ contract ExampleProcedure is Procedure {
         string memory resultString = "";
         return abi.encode(resultString);
     }
-
-    function cool() public returns (address) {
-        // Do something cool
-        address cool = address(msg.sender);
-        return cool;
-    }
 }
