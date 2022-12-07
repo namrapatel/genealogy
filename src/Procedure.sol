@@ -8,5 +8,5 @@ abstract contract Procedure {
         subProcedures = _subProcedures;
     }
 
-    function execute() public virtual;
+    function execute(bytes memory arguments) public virtual;
 }
