@@ -23,7 +23,9 @@ abstract contract Procedure {
             }
             return result;
         } else {
-            return _execute(getRoles(address(0), entities)); // For when _execute() is overriden
+            // This is the case where the procedure is a leaf node,
+            // if _execute is not overridden, it will just return an empty bytes array
+            return _execute(getRoles(address(0), entities)); 
         }
     }
 
