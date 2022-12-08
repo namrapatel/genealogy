@@ -14,9 +14,17 @@ abstract contract Procedure {
 
     // Takes a list of Roles and uses getRoles for each subprocedure to get the ordered list of entities
     // to pass to the subprocedure's execute function
-    function execute(Role[] memory roles) public virtual returns (bytes memory result);
+    function execute(uint256[] memory roles) public virtual returns (bytes memory result) {
+        for(uint256 i = 0; i < subProcedures.length; i++) {
+            address subProcedure = subProcedures[i];
+            uint256[] memory orderedEntities = getRoles(subProcedure, roles);
+            bytes memory subProcedureResult = Procedure(subProcedure).execute(orderedEntities);
+            result = abi.encodePacked(result, subProcedureResult);
+        }
+        return result;
+    }
 
-    function getRoles(address subProcedure, Role[] memory roles) internal virtual returns (uint256[] memory orderedEntities) {
+    function getRoles(address subProcedure, Role[] memory roles) internal returns (uint256[] memory orderedEntities) {
         string[] memory orderedRoleIds = subProcedureToOrderedRoleIds[subProcedure];
         orderedEntities = new uint256[](orderedRoleIds.length);
         for(uint256 i = 0; i < orderedRoleIds.length; i++) {
@@ -46,4 +54,6 @@ abstract contract Procedure {
             subProcedureToOrderedRoleIds[subProcedures[i]] = orderedRoleIds;
         }
     }
+
+    // Getting, setting, reordering
 }
