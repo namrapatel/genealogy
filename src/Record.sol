@@ -3,9 +3,9 @@ pragma solidity ^0.8.13;
 
 import { IRecord } from "./interfaces/IRecord.sol";
 import { IEntityIndexer } from "./interfaces/IEntityIndexer.sol";
-import { Set } from "./Set.sol";
-import { MapSet } from "./MapSet.sol";
 import { Dict } from "./Dict.sol";
+import { MapSet } from "./MapSet.sol";
+import { Set } from "./Set.sol";
 
 abstract contract Record is IRecord {
 
@@ -17,8 +17,9 @@ abstract contract Record is IRecord {
     string public idString;   
 
     // Entity related data
-    mapping(address => Dict[]) internal ownerToEntityValuePair;
-    mapping(address => mapping(uint256 => uint256[])) ownerToValueToEntities;
+    mapping(address => Dict[]) internal ownerToEntityValuePairs;
+    mapping(address => MapSet) ownerToValueToEntities;
+    mapping(address => Set) ownerToEntities;
     IEntityIndexer[] internal indexers;
 
     constructor(
@@ -33,19 +34,87 @@ abstract contract Record is IRecord {
         if (_world != address(0)) registerWorld(_world);
     }
 
-    function registerWorld(address _world) internal {
+    /** Revert if caller is not the owner of this component */
+    modifier onlyOwner() {
+        require(msg.sender == _owner, "ONLY_OWNER");
+        _;
+    }
+
+    /** Revert if caller does not have write access to this component */
+    modifier onlyWriter() {
+        require(writeAccess[msg.sender], "ONLY_WRITER");
+        _;
+    }
+
+    /** Get the owner of this component */
+    function owner() public view override returns (address) {
+        return _owner;
+    }
+
+    function registerWorld(address _world) public onlyOwner {
         world = _world;
         IRecord(_world).authorizeWriter(address(this));
     }
 
-    function authorizeWriter(address writer) external override {
+    function authorizeWriter(address writer) external override onlyOwner {
         require(msg.sender == world, "Only world can authorize writers");
         writeAccess[writer] = true;
     }
 
-    function unauthorizeWriter(address writer) external override {
+    function unauthorizeWriter(address writer) external override onlyOwner {
         require(msg.sender == world, "Only world can unauthorize writers");
         writeAccess[writer] = false;
     }
     
-}
+    function set(uint256 entity, bytes memory value) external override onlyWriter {
+        Dict[] storage entityValuePairs = ownerToEntityValuePair[msg.sender];
+        MapSet storage valueToEntities = ownerToValueToEntities[msg.sender];
+        Set storage entities = ownerToEntities[msg.sender];
+
+        // Store the entity
+        entities.add(entity);
+
+        // Check if entity already exists, if so, update value and return
+        valueToEntities.remove(uint256(keccak256(entityToValuePairs.get(entity))), entity); // TODO: test this line
+
+        // Add the entity to the valueToEntities map
+        valueToEntities.add(uint256(keccak256(value)), entity);
+
+        // Add the entity to the entityValuePairs map
+        entityValuePairs.add(entity, uint256(keccak256(value)));
+
+        // TODO: Update indexer
+    }
+
+    function remove(uint256 entity) external override onlyWriter {
+        Dict[] storage entityValuePairs = ownerToEntityValuePair[msg.sender];
+        MapSet storage valueToEntities = ownerToValueToEntities[msg.sender];
+        Set storage entities = ownerToEntities[msg.sender];
+
+        // Remove the entity from the entityValuePairs map
+        entityValuePairs.remove(entity);
+
+        // Remove the entity from the valueToEntities map
+        valueToEntities.remove(uint256(keccak256(entityToValuePairs.get(entity))), entity);
+
+        // Remove the entity from the entities set
+        entities.remove(entity);
+    }
+
+    function has(uint256 entity, address owner) external view override returns (bool) {
+        return ownerToEntities[owner].has(entity);
+    }
+
+    function getRawValue(uint256 entity, address owner) external view override returns (bytes memory) {
+        return ownerToEntityValuePairs[owner].get(entity);
+    }
+
+    function getEntities(address owner) external view override returns (uint256[] memory) {
+        return ownerToEntities[owner].getItems();
+    }
+
+    function getEntitiesWithValue(bytes memory value, address owner) external view override returns (uint256[] memory) {
+        return ownerToValueToEntities[owner].getItems(uint256(keccak256(value)));
+    }
+
+}   
