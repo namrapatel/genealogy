@@ -5,8 +5,8 @@ import { Role } from "./Interaction.sol";
 import { rolesToEntities } from "./utils.sol";
 
 abstract contract Procedure {
-    address[] subProcedures;
-    mapping(address => string[]) subProcedureToOrderedRoleIds;
+    address[] public subProcedures;
+    mapping(address => string[]) public subProcedureToOrderedRoleIds;
 
     constructor(address[] memory _subProcedures, uint8[] memory numIdsBySubProcedure, string[] memory ids) {
         subProcedures = _subProcedures;

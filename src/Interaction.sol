@@ -4,7 +4,6 @@ pragma solidity ^0.8.13;
 import { Procedure } from "./Procedure.sol";
 import { addressToEntity } from "./utils.sol";
 
-// Temporary
 struct Role {
     string key;
     uint256 entity;
@@ -15,6 +14,7 @@ struct State {
     address state;
 }
 
+// Potential variants:
 // uint256 totalCallsAllowed;
 // mapping(uint256 => uint256) entityToCallsAllowed;
 // TODO: wait time by block timestamp?
@@ -22,11 +22,12 @@ struct State {
 
 abstract contract Interaction {
    
-    uint256 turnCounter;
-    Role[] roles;
-    State[] states;
-    mapping(uint256 => uint8[]) turnToRoleIndexes;
-    mapping(uint256 => address) turnToState;
+    uint256 public turnCounter;
+    Role[] public roles;
+    State[] public states;
+    mapping(uint256 => uint8[]) public turnToRoleIndexes;
+    mapping(uint256 => address) public turnToState;
+    bool locked;
 
     event Executed(uint256 turnCounter, bytes executionResult);
     event Transition(uint256 turnCounter, Role[] newRoles, address newState);
@@ -34,7 +35,8 @@ abstract contract Interaction {
     constructor(
         Role[] memory _roles,
         address[] memory _states,
-        uint8[][] memory _roleIndexes
+        uint8[][] memory _roleIndexes,
+        bool _locked
     ) {
         turnCounter = 0;
         roles = _roles;
@@ -48,7 +50,7 @@ abstract contract Interaction {
         for(uint256 i = 0; i < _roleIndexes.length; i++) {
             turnToRoleIndexes[i] = _roleIndexes[i];
         }
-
+        locked = _locked;
     }
 
     function authenticateAndExecute() public virtual {
@@ -94,5 +96,23 @@ abstract contract Interaction {
 
     function changeState(bytes memory executionResult) internal virtual returns (address);
 
-    // TODO: locks, getters, setters.
+    function setRoles(Role[] memory _roles) public {
+        require(!locked, "Interaction is locked");
+        roles = _roles;
+    }
+
+    function setStates(State[] memory _states) public {
+        require(!locked, "Interaction is locked");
+        states = _states;
+    }
+
+    function setTurnToRoleIndexes(uint256 turn, uint8[] memory roleIndexes) public {
+        require(!locked, "Interaction is locked");
+        turnToRoleIndexes[turn] = roleIndexes;
+    }
+
+    function setTurnToState(uint256 turn, address state) public {
+        require(!locked, "Interaction is locked");
+        turnToState[turn] = state;
+    }
 }
