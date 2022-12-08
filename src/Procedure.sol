@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { Role } from "./Interaction.sol";
+import { rolesToEntities } from "./utils.sol";
 
 abstract contract Procedure {
     address[] subProcedures;
@@ -12,31 +13,39 @@ abstract contract Procedure {
         buildSubProcedureToOrderedRoleIds(numIdsBySubProcedure, ids);
     }
 
-    // Takes a list of Roles and uses getRoles for each subprocedure to get the ordered list of entities
-    // to pass to the subprocedure's execute function
-    function execute(uint256[] memory roles) public virtual returns (bytes memory result) {
+    function execute(uint256[] memory entities) public virtual returns (bytes memory result) {
         for(uint256 i = 0; i < subProcedures.length; i++) {
             address subProcedure = subProcedures[i];
-            uint256[] memory orderedEntities = getRoles(subProcedure, roles);
-            bytes memory subProcedureResult = Procedure(subProcedure).execute(orderedEntities);
+            Role[] memory roles = getRoles(subProcedure, entities);
+            bytes memory executionResult = _execute(roles);
+            result = abi.encodePacked(result, executionResult);
+        }
+        return result;
+    }
+
+    // User would override this function
+    function _execute(Role[] memory roles) public virtual returns (bytes memory result) {
+        for(uint256 i = 0; i < subProcedures.length; i++) {
+            address subProcedure = subProcedures[i];
+            uint256[] memory entities = rolesToEntities(roles);
+            bytes memory subProcedureResult = Procedure(subProcedure).execute(entities);
             result = abi.encodePacked(result, subProcedureResult);
         }
         return result;
     }
 
-    function getRoles(address subProcedure, Role[] memory roles) internal returns (uint256[] memory orderedEntities) {
+    // Takes a list of entities and the subprocedure and builds Role structs for each entity
+    function getRoles(address subProcedure, uint256[] memory entities) internal view returns (Role[] memory orderedRoles) {
         string[] memory orderedRoleIds = subProcedureToOrderedRoleIds[subProcedure];
-        orderedEntities = new uint256[](orderedRoleIds.length);
+        orderedRoles = new Role[](orderedRoleIds.length);
         for(uint256 i = 0; i < orderedRoleIds.length; i++) {
             string memory roleId = orderedRoleIds[i];
-            for(uint256 j = 0; j < roles.length; j++) {
-                if(keccak256(abi.encodePacked(roles[j].key)) == keccak256(abi.encodePacked(roleId))) {
-                    orderedEntities[i] = roles[j].entity;
-                    break;
-                }
-            }
+            orderedRoles[i] = Role({
+                key: roleId,
+                entity: entities[i]
+            });
         }
-        return orderedEntities;
+        return orderedRoles;
     }
 
     function buildSubProcedureToOrderedRoleIds(
