@@ -13,17 +13,22 @@ abstract contract Procedure {
         buildSubProcedureToOrderedRoleIds(numIdsBySubProcedure, ids);
     }
 
-    function execute(uint256[] memory entities) public virtual returns (bytes memory result) {
-        for(uint256 i = 0; i < subProcedures.length; i++) {
-            address subProcedure = subProcedures[i];
-            Role[] memory roles = getRoles(subProcedure, entities);
-            bytes memory executionResult = _execute(roles);
-            result = abi.encodePacked(result, executionResult);
+    function execute(uint256[] memory entities) public returns (bytes memory result) {
+        if (subProcedures.length > 0) {
+            for(uint256 i = 0; i < subProcedures.length; i++) {
+                address subProcedure = subProcedures[i];
+                Role[] memory roles = getRoles(subProcedure, entities);
+                bytes memory executionResult = _execute(roles);
+                result = abi.encodePacked(result, executionResult);
+            }
+            return result;
+        } else {
+            return _execute(getRoles(address(0), entities)); // For when _execute() is overriden
         }
-        return result;
     }
 
-    // User would override this function
+    // User would override this function if they have their own logic they want to implement
+    // instead of just executing the subprocedures
     function _execute(Role[] memory roles) public virtual returns (bytes memory result) {
         for(uint256 i = 0; i < subProcedures.length; i++) {
             address subProcedure = subProcedures[i];
@@ -35,7 +40,10 @@ abstract contract Procedure {
     }
 
     // Takes a list of entities and the subprocedure and builds Role structs for each entity
-    function getRoles(address subProcedure, uint256[] memory entities) internal view returns (Role[] memory orderedRoles) {
+    function getRoles(
+        address subProcedure,
+        uint256[] memory entities
+    ) internal view returns (Role[] memory orderedRoles) {
         string[] memory orderedRoleIds = subProcedureToOrderedRoleIds[subProcedure];
         orderedRoles = new Role[](orderedRoleIds.length);
         for(uint256 i = 0; i < orderedRoleIds.length; i++) {

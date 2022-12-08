@@ -37,7 +37,7 @@ abstract contract Interaction {
         roles = _roles;
         for(uint256 i = 0; i < _states.length; i++) {
             states.push(State({
-                key: "",
+                key: "", // TODO: what are state keys?
                 state: _states[i]
             }));
             turnToState[i] = _states[i];
