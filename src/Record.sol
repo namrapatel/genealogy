@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import { IRecord } from "./interfaces/IRecord.sol";
-import { IEntityIndexer } from "./interfaces/IEntityIndexer.sol";
+import { Set } from "./Set.sol";
 import { Dict } from "./Dict.sol";
 import { MapSet } from "./MapSet.sol";
-import { Set } from "./Set.sol";
+import { IRecord } from "./interfaces/IRecord.sol";
+import { IEntityIndexer } from "./interfaces/IEntityIndexer.sol";
 
 abstract contract Record is IRecord {
 
@@ -20,7 +20,7 @@ abstract contract Record is IRecord {
     mapping(address => Dict[]) internal ownerToEntityValuePairs;
     mapping(address => MapSet) ownerToValueToEntities;
     mapping(address => Set) ownerToEntities;
-    IEntityIndexer[] internal indexers;
+    // IEntityIndexer[] internal indexers;
 
     constructor(
         address _world,
@@ -66,7 +66,7 @@ abstract contract Record is IRecord {
         writeAccess[writer] = false;
     }
     
-    function set(uint256 entity, bytes memory value) external override onlyWriter {
+    function set(uint256 entity, bytes memory value) external virtual override onlyWriter {
         Dict[] storage entityValuePairs = ownerToEntityValuePair[msg.sender];
         MapSet storage valueToEntities = ownerToValueToEntities[msg.sender];
         Set storage entities = ownerToEntities[msg.sender];
@@ -83,10 +83,12 @@ abstract contract Record is IRecord {
         // Add the entity to the entityValuePairs map
         entityValuePairs.add(entity, uint256(keccak256(value)));
 
+        super._set(entity, value);
+
         // TODO: Update indexer
     }
 
-    function remove(uint256 entity) external override onlyWriter {
+    function remove(uint256 entity) external virtual override onlyWriter {
         Dict[] storage entityValuePairs = ownerToEntityValuePair[msg.sender];
         MapSet storage valueToEntities = ownerToValueToEntities[msg.sender];
         Set storage entities = ownerToEntities[msg.sender];
@@ -99,6 +101,10 @@ abstract contract Record is IRecord {
 
         // Remove the entity from the entities set
         entities.remove(entity);
+
+        super._remove(entity);
+
+        // TODO: Update indexer
     }
 
     function has(uint256 entity, address owner) external view override returns (bool) {
@@ -116,5 +122,13 @@ abstract contract Record is IRecord {
     function getEntitiesWithValue(bytes memory value, address owner) external view override returns (uint256[] memory) {
         return ownerToValueToEntities[owner].getItems(uint256(keccak256(value)));
     }
+
+    function transferOwnership(address newOwner) external override onlyOwner {
+       writeAccess[msg.sender] = false;
+        _owner = newOwner;
+        writeAccess[newOwner] = true;
+    }
+
+    // TODO: registerIndexer()
 
 }   
