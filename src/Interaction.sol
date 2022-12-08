@@ -29,8 +29,8 @@ abstract contract Interaction {
     mapping(uint256 => address) public turnToState;
     bool locked;
 
-    event Executed(uint256 turnCounter, bytes executionResult);
-    event Transition(uint256 turnCounter, Role[] newRoles, address newState);
+    event Executed(uint256 indexed turnCounter, bytes indexed executionResult);
+    event Transition(uint256 indexed turnCounter, Role[] indexed newRoles, address indexed newState);
 
     constructor(
         Role[] memory _roles,
