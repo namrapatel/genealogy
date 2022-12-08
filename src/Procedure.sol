@@ -74,5 +74,48 @@ abstract contract Procedure {
         }
     }
 
-    // Getting, setting, reordering
+    function getSubProcedures() public view returns (address[] memory) {
+        return subProcedures;
+    }
+
+    function setSubProcedures(address[] memory _subProcedures) public {
+        subProcedures = _subProcedures;
+    }
+
+    function addSubProcedure(address _subProcedure) public {
+        subProcedures.push(_subProcedure);
+    }
+
+    function removeSubProcedure(address _subProcedure) public {
+        for(uint256 i = 0; i < subProcedures.length; i++) {
+            if (subProcedures[i] == _subProcedure) {
+                subProcedures[i] = subProcedures[subProcedures.length - 1];
+                subProcedures.pop();
+                break;
+            }
+        }
+    }
+
+    function getSubProcedureToOrderedRoleIds(address subProcedure) public view returns (string[] memory) {
+        return subProcedureToOrderedRoleIds[subProcedure];
+    }
+
+    function setSubProcedureToOrderedRoleIds(address subProcedure, string[] memory ids) public {
+        subProcedureToOrderedRoleIds[subProcedure] = ids;
+    }
+
+    function addSubProcedureToOrderedRoleIds(address subProcedure, string memory id) public {
+        subProcedureToOrderedRoleIds[subProcedure].push(id);
+    }
+
+    function removeSubProcedureToOrderedRoleIds(address subProcedure, string memory id) public {
+        string[] storage ids = subProcedureToOrderedRoleIds[subProcedure];
+        for(uint256 i = 0; i < ids.length; i++) {
+            if (keccak256(abi.encodePacked(ids[i])) == keccak256(abi.encodePacked(id))) {
+                ids[i] = ids[ids.length - 1];
+                ids.pop();
+                break;
+            }
+        }
+    }
 }
