@@ -28,6 +28,9 @@ abstract contract Interaction {
     mapping(uint256 => uint8[]) turnToRoleIndexes;
     mapping(uint256 => address) turnToState;
 
+    event Executed(uint256 turnCounter, bytes executionResult);
+    event Transition(uint256 turnCounter, Role[] newRoles, address newState);
+
     constructor(
         Role[] memory _roles,
         address[] memory _states,
@@ -76,18 +79,20 @@ abstract contract Interaction {
 
         // Execute the state
         bytes memory result = Procedure(stateAddress).execute(entities);
+        emit Executed(turnCounter, result);
         transition(result);
     }
 
     function transition(bytes memory executionResult) internal {
         turnCounter++;
-        changeTurn(executionResult);
-        changeState(executionResult);
+        Role[] memory newRoles = changeTurn(executionResult);
+        address newState = changeState(executionResult);
+        emit Transition(turnCounter, newRoles, newState);
     }
 
-    function changeTurn(bytes memory executionResult) internal virtual;
+    function changeTurn(bytes memory executionResult) internal virtual returns (Role[] memory);
 
-    function changeState(bytes memory executionResult) internal virtual;
+    function changeState(bytes memory executionResult) internal virtual returns (address);
 
-    // TODO: events, locks, getters, setters.
+    // TODO: locks, getters, setters.
 }
