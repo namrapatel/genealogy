@@ -129,6 +129,10 @@ abstract contract Record is IRecord {
         writeAccess[newOwner] = true;
     }
 
+    function registerIndexer(uint256 entity, IEntityIndexer indexer) external onlyOwner {}
+
     // TODO: registerIndexer()
+
+    function getSchema() public pure virtual returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
 
 }   

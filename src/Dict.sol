@@ -2,15 +2,15 @@
 pragma solidity >=0.8.0;
 
 /**
- * Implements a mapping(uint256 => uint256) and a bunch of helper functions for it
+ * Implements a mapping(uint256 => bytes) and a bunch of helper functions for it
  */
 contract Dict {
 
-    mapping(uint256 => uint256) private items;
+    mapping(uint256 => bytes) private items;
     mapping(uint256 => uint256) private itemToIndex;
     uint256[] private itemKeys;
     
-    function add(uint256 key, uint256 value) public {
+    function add(uint256 key, bytes memory value) public {
         if (has(key)) return;
     
         itemToIndex[key] = itemKeys.length;
@@ -40,7 +40,7 @@ contract Dict {
         return itemToIndex[key] != 0;
     }
     
-    function get(uint256 key) public view returns (uint256) {
+    function get(bytes memory key) public view returns (uint256) {
         return items[key];
     }
     
