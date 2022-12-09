@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import { Set } from "./Set.sol";
-import { Dict } from "./Dict.sol";
 import { MapSet } from "./MapSet.sol";
 import { IRecord } from "./interfaces/IRecord.sol";
 import { LibTypes } from "./libraries/LibTypes.sol";
