@@ -38,14 +38,15 @@ contract RegistrationProcedure is Procedure {
         require(id != 0, "Invalid id.");
         require(addr != address(0), "Invalid address.");
 
-        Uint256Record registry = registrationType = RegistrationType.Record 
-            ? world._records
-            : world._procedures;
+        Uint256Record registry = registrationType == RegistrationType.Record 
+            ? world.getRecords()
+            : world.getProcedures();
         uint256 entity = addressToEntity(addr);
 
-        require(!registry.has(entity), "entity already registered");
+        address currentTenet = registry.currentTenet();
+        require(!registry.has(entity, currentTenet), "entity already registered");
 
-        uint256[] memory entitiesWithId = registry.getEntitiesWithValue(id);
+        uint256[] memory entitiesWithId = registry.getEntitiesWithValue(id, currentTenet);
 
         require(
         entitiesWithId.length == 0 ||
@@ -60,5 +61,4 @@ contract RegistrationProcedure is Procedure {
 
         registry.set(entity, id);
     }
-
 }

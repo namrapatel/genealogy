@@ -19,4 +19,12 @@ contract World {
         
         
     }
+
+    function getRecords() public view returns (Uint256Record) {
+        return _records;
+    }
+
+    function getProcedures() public view returns (Uint256Record) {
+        return _procedures;
+    }
 }

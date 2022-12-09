@@ -11,14 +11,14 @@ abstract contract Record is IRecord {
 
     // Metadata
     address public world;
-    address internal _owner;
+    address internal contractOwner;
+    address public currentTenet;
     mapping(address => bool) writeAccess;
     uint256 public id;
     string public idString;   
 
     // Entity related data
-    // TODO: Maybe use nested mapping instead of a contract for each owner
-    mapping(address => mapping(uint256 => bytes)) ownerToEntityValuePairs; // 
+    mapping(address => mapping(uint256 => bytes)) ownerToEntityValuePairs;
     mapping(address => address) ownerToValueToEntities; // MapSet
     mapping(address => address) ownerToEntities; // Set
     // IEntityIndexer[] internal indexers;
@@ -28,7 +28,8 @@ abstract contract Record is IRecord {
         uint256 _id,
         string memory _idString
     ) {
-        _owner = msg.sender;
+        currentTenet = address(0);
+        contractOwner = msg.sender;
         writeAccess[msg.sender] = true;
         id = _id;
         idString = _idString;
@@ -37,7 +38,7 @@ abstract contract Record is IRecord {
 
     /** Revert if caller is not the owner of this component */
     modifier onlyOwner() {
-        require(msg.sender == _owner, "ONLY_OWNER");
+        require(msg.sender == contractOwner, "ONLY_OWNER");
         _;
     }
 
@@ -49,7 +50,7 @@ abstract contract Record is IRecord {
 
     /** Get the owner of this component */
     function owner() public view override returns (address) {
-        return _owner;
+        return contractOwner;
     }
 
     function registerWorld(address _world) public onlyOwner {
@@ -68,6 +69,11 @@ abstract contract Record is IRecord {
     }
     
     function set(uint256 entity, bytes memory value) public virtual override onlyWriter {
+        // TODO: Improve Tenet checking
+        if(currentTenet == address(0)) {
+            currentTenet = msg.sender;
+        }
+
         // Add entity to set
         Set(ownerToEntities[msg.sender]).add(entity);
 
@@ -96,32 +102,36 @@ abstract contract Record is IRecord {
         // TODO: Update indexer
     }
 
-    function has(uint256 entity, address owner) public view virtual override returns (bool) {
-        return Set(ownerToEntities[owner]).has(entity);
+    function has(uint256 entity, address _owner) public view virtual override returns (bool) {
+        return Set(ownerToEntities[_owner]).has(entity);
     }
 
-    function getRawValue(uint256 entity, address owner) public view virtual override returns (bytes memory) {
-        return ownerToEntityValuePairs[owner][entity];
+    function getRawValue(uint256 entity, address _owner) public view virtual override returns (bytes memory) {
+        return ownerToEntityValuePairs[_owner][entity];
     }
 
-    function getEntities(address owner) public view virtual override returns (uint256[] memory) {
-        return Set(ownerToEntities[owner]).getItems();
+    function getEntities(address _owner) public view virtual override returns (uint256[] memory) {
+        return Set(ownerToEntities[_owner]).getItems();
     }
 
-    function getEntitiesWithValue(bytes memory value, address owner) public view virtual override returns (uint256[] memory) {
-        return MapSet(ownerToValueToEntities[owner]).getItems(uint256(keccak256(value)));
+    function getEntitiesWithValue(bytes memory value, address _owner) public view virtual override returns (uint256[] memory) {
+        return MapSet(ownerToValueToEntities[_owner]).getItems(uint256(keccak256(value)));
     }
 
     function transferOwnership(address newOwner) external override onlyOwner {
-       writeAccess[msg.sender] = false;
-        _owner = newOwner;
+        writeAccess[msg.sender] = false;
+        contractOwner = newOwner;
         writeAccess[newOwner] = true;
     }
 
+    function changeCurrentTenet(address newGlobalOwner) public virtual {
+        // TODO: Add proper mechanism for this:
+        require(msg.sender == currentTenet, "Only global owner can change global owner");
+        currentTenet = newGlobalOwner;
+    }
+
+    // TODO
     function registerIndexer(uint256 entity, IEntityIndexer indexer) external onlyOwner {}
 
-    // TODO: registerIndexer()
-
     function getSchema() public pure virtual returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
-
 }   
