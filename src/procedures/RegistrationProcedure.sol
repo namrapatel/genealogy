@@ -3,11 +3,13 @@ pragma solidity ^0.8.13;
 
 import { World } from "../World.sol";
 import { Procedure } from "../Procedure.sol";
-import { addressToEntity } from "../utils.sol";
+import { addressToEntity, entityToAddress } from "../utils.sol";
+import { IOwned } from "../interfaces/IOwned.sol";
+import { Uint256Record } from "../records/Uint256Record.sol";
 
 uint256 constant ID = uint256(keccak256(("world.procedure.register")));
 
-enum RegisterationType {
+enum RegistrationType {
     Record,
     Procedure
 }
@@ -33,7 +35,7 @@ contract RegistrationProcedure is Procedure {
     ) public override returns (bytes memory) {
 
         require(msg.sender == address(world), "RegistrationProcedure can only be called via World.");
-        require(registerType == RegisterType.Component || registerType == RegisterType.System, "Invalid type.");
+        require(registrationType == RegistrationType.Record || registrationType == RegistrationType.Procedure, "Invalid type.");
         require(id != 0, "Invalid id.");
         require(addr != address(0), "Invalid address.");
 

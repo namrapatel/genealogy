@@ -8,6 +8,11 @@ function addressToEntity(address addr) pure returns (uint256) {
   return uint256(uint160(addr));
 }
 
+/** Turn an entity ID into its corresponding Ethereum address. */
+function entityToAddress(uint256 entity) pure returns (address) {
+  return address(uint160(entity));
+}
+
 // Get uint256[] entities from Role[]
 function rolesToEntities(Role[] memory roles) pure returns (uint256[] memory) {
   uint256[] memory entities = new uint256[](roles.length);

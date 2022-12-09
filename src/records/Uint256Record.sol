@@ -4,7 +4,6 @@ pragma solidity >=0.8.0;
 import "../Record.sol";
 
 contract Uint256Record is Record {
-
     constructor(
         address world,
         uint256 id,
@@ -23,8 +22,8 @@ contract Uint256Record is Record {
         set(entity, abi.encode(value));
     }
 
-    function getValue(uint256 entity) public view returns (uint256) {
-        uint256 value = abi.decode(getRawValue(entity), (uint256));
+    function getValue(uint256 entity, address owner) public view returns (uint256) {
+        uint256 value = abi.decode(getRawValue(entity, owner), (uint256));
         return value;
     }
 

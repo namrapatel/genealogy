@@ -18,7 +18,7 @@ abstract contract Record is IRecord {
     string public idString;   
 
     // Entity related data
-    mapping(address => Dict[]) internal ownerToEntityValuePairs;
+    mapping(address => Dict[]) ownerToEntityValuePairs;
     mapping(address => MapSet) ownerToValueToEntities;
     mapping(address => Set) ownerToEntities;
     // IEntityIndexer[] internal indexers;
@@ -67,7 +67,7 @@ abstract contract Record is IRecord {
         writeAccess[writer] = false;
     }
     
-    function set(uint256 entity, bytes memory value) external virtual override onlyWriter {
+    function set(uint256 entity, bytes memory value) public virtual override onlyWriter {
         Dict[] storage entityValuePairs = ownerToEntityValuePairs[msg.sender];
         MapSet valueToEntities = ownerToValueToEntities[msg.sender];
         Set entities = ownerToEntities[msg.sender];
@@ -89,7 +89,7 @@ abstract contract Record is IRecord {
         // TODO: Update indexer
     }
 
-    function remove(uint256 entity) external virtual override onlyWriter {
+    function remove(uint256 entity) public virtual override onlyWriter {
         Dict[] storage entityValuePairs = ownerToEntityValuePairs[msg.sender];
         MapSet valueToEntities = ownerToValueToEntities[msg.sender];
         Set entities = ownerToEntities[msg.sender];
@@ -108,19 +108,19 @@ abstract contract Record is IRecord {
         // TODO: Update indexer
     }
 
-    function has(uint256 entity, address owner) external view override returns (bool) {
+    function has(uint256 entity, address owner) public view virtual override returns (bool) {
         return ownerToEntities[owner].has(entity);
     }
 
-    function getRawValue(uint256 entity, address owner) external view override returns (bytes memory) {
+    function getRawValue(uint256 entity, address owner) public view virtual override returns (bytes memory) {
         return ownerToEntityValuePairs[owner].get(entity);
     }
 
-    function getEntities(address owner) external view override returns (uint256[] memory) {
+    function getEntities(address owner) public view virtual override returns (uint256[] memory) {
         return ownerToEntities[owner].getItems();
     }
 
-    function getEntitiesWithValue(bytes memory value, address owner) external view override returns (uint256[] memory) {
+    function getEntitiesWithValue(bytes memory value, address owner) public view virtual override returns (uint256[] memory) {
         return ownerToValueToEntities[owner].getItems(uint256(keccak256(value)));
     }
 
