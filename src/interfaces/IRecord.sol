@@ -10,13 +10,13 @@ interface IRecord is IOwned {
 
   function remove(uint256 entity) external;
 
-  function has(uint256 entity) external view returns (bool);
+  function has(uint256 entity, address owner) external view returns (bool);
 
-  function getRawValue(uint256 entity) external view returns (bytes memory);
+  function getRawValue(uint256 entity, address owner) external view returns (bytes memory);
 
-  function getEntities() external view returns (uint256[] memory);
+  function getEntities(address owner) external view returns (uint256[] memory);
 
-  function getEntitiesWithValue(bytes memory value) external view returns (uint256[] memory);
+  function getEntitiesWithValue(bytes memory value, address owner) external view returns (uint256[] memory);
 
   function authorizeWriter(address writer) external;
 

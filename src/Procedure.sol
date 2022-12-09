@@ -7,6 +7,7 @@ import { rolesToEntities } from "./utils.sol";
 
 abstract contract Procedure {
     World world;
+    uint256 public id;
     string public idString;
     address[] public subProcedures;
     mapping(address => string[]) public subProcedureToOrderedRoleIds;
@@ -16,6 +17,7 @@ abstract contract Procedure {
         address[] memory _subProcedures, 
         uint8[] memory numIdsBySubProcedure,
         string[] memory ids,
+        uint256 memory id,
         string memory _idString
         ) {
         world = _world;

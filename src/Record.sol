@@ -5,6 +5,7 @@ import { Set } from "./Set.sol";
 import { Dict } from "./Dict.sol";
 import { MapSet } from "./MapSet.sol";
 import { IRecord } from "./interfaces/IRecord.sol";
+import { LibTypes } from "./libraries/LibTypes.sol";
 import { IEntityIndexer } from "./interfaces/IEntityIndexer.sol";
 
 abstract contract Record is IRecord {
@@ -67,15 +68,15 @@ abstract contract Record is IRecord {
     }
     
     function set(uint256 entity, bytes memory value) external virtual override onlyWriter {
-        Dict[] storage entityValuePairs = ownerToEntityValuePair[msg.sender];
-        MapSet storage valueToEntities = ownerToValueToEntities[msg.sender];
-        Set storage entities = ownerToEntities[msg.sender];
+        Dict[] storage entityValuePairs = ownerToEntityValuePairs[msg.sender];
+        MapSet valueToEntities = ownerToValueToEntities[msg.sender];
+        Set entities = ownerToEntities[msg.sender];
 
         // Store the entity
         entities.add(entity);
 
         // Check if entity already exists, if so, update value and return
-        valueToEntities.remove(uint256(keccak256(entityToValuePairs.get(entity))), entity); // TODO: test this line
+        valueToEntities.remove(uint256(keccak256(entityValuePairs.get(entity))), entity); // TODO: test this line
 
         // Add the entity to the valueToEntities map
         valueToEntities.add(uint256(keccak256(value)), entity);
@@ -89,15 +90,15 @@ abstract contract Record is IRecord {
     }
 
     function remove(uint256 entity) external virtual override onlyWriter {
-        Dict[] storage entityValuePairs = ownerToEntityValuePair[msg.sender];
-        MapSet storage valueToEntities = ownerToValueToEntities[msg.sender];
-        Set storage entities = ownerToEntities[msg.sender];
+        Dict[] storage entityValuePairs = ownerToEntityValuePairs[msg.sender];
+        MapSet valueToEntities = ownerToValueToEntities[msg.sender];
+        Set entities = ownerToEntities[msg.sender];
 
         // Remove the entity from the entityValuePairs map
         entityValuePairs.remove(entity);
 
         // Remove the entity from the valueToEntities map
-        valueToEntities.remove(uint256(keccak256(entityToValuePairs.get(entity))), entity);
+        valueToEntities.remove(uint256(keccak256(entityValuePairs.get(entity))), entity);
 
         // Remove the entity from the entities set
         entities.remove(entity);
