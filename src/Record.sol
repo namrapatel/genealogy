@@ -81,7 +81,7 @@ abstract contract Record is IRecord {
         valueToEntities.add(uint256(keccak256(value)), entity);
 
         // Add the entity to the entityValuePairs map
-        entityValuePairs.add(entity, uint256(keccak256(value)));
+        entityValuePairs.add(entity, value); // TODO: test this line, is this how we set bytes (uint)
 
         super._set(entity, value);
 

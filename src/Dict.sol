@@ -40,7 +40,7 @@ contract Dict {
         return itemToIndex[key] != 0;
     }
     
-    function get(bytes memory key) public view returns (uint256) {
+    function get(uint256 key) public view returns (bytes memory) {
         return items[key];
     }
     
