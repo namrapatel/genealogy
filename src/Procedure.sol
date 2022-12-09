@@ -1,16 +1,27 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import { World } from "./World.sol";
 import { Role } from "./Interaction.sol";
 import { rolesToEntities } from "./utils.sol";
 
 abstract contract Procedure {
+    World world;
+    string public idString;
     address[] public subProcedures;
     mapping(address => string[]) public subProcedureToOrderedRoleIds;
 
-    constructor(address[] memory _subProcedures, uint8[] memory numIdsBySubProcedure, string[] memory ids) {
+    constructor(
+        World _world,
+        address[] memory _subProcedures, 
+        uint8[] memory numIdsBySubProcedure,
+        string[] memory ids,
+        string memory _idString
+        ) {
+        world = _world;
         subProcedures = _subProcedures;
         buildSubProcedureToOrderedRoleIds(numIdsBySubProcedure, ids);
+        idString = _idString;
     }
 
     function execute(uint256[] memory entities) public returns (bytes memory result) {
