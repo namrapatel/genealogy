@@ -18,9 +18,10 @@ abstract contract Record is IRecord {
     string public idString;   
 
     // Entity related data
-    mapping(address => Dict[]) ownerToEntityValuePairs;
-    mapping(address => MapSet) ownerToValueToEntities;
-    mapping(address => Set) ownerToEntities;
+    // TODO: Maybe use nested mapping instead of a contract for each owner
+    mapping(address => mapping(uint256 => bytes)) ownerToEntityValuePairs; // 
+    mapping(address => address) ownerToValueToEntities; // MapSet
+    mapping(address => address) ownerToEntities; // Set
     // IEntityIndexer[] internal indexers;
 
     constructor(
@@ -68,60 +69,48 @@ abstract contract Record is IRecord {
     }
     
     function set(uint256 entity, bytes memory value) public virtual override onlyWriter {
-        Dict[] storage entityValuePairs = ownerToEntityValuePairs[msg.sender];
-        MapSet valueToEntities = ownerToValueToEntities[msg.sender];
-        Set entities = ownerToEntities[msg.sender];
+        // Add entity to set
+        Set(ownerToEntities[msg.sender]).add(entity);
 
-        // Store the entity
-        entities.add(entity);
-
-        // Check if entity already exists, if so, update value and return
-        valueToEntities.remove(uint256(keccak256(entityValuePairs.get(entity))), entity); // TODO: test this line
-
+        // Remove the entity from valueToEntities map
+        MapSet valueToEntities = MapSet(ownerToValueToEntities[msg.sender]);
+        valueToEntities.remove(uint256(keccak256(ownerToEntityValuePairs[msg.sender][entity])), entity);
         // Add the entity to the valueToEntities map
         valueToEntities.add(uint256(keccak256(value)), entity);
 
         // Add the entity to the entityValuePairs map
-        entityValuePairs.add(entity, value); // TODO: test this line, is this how we set bytes (uint)
-
-        super._set(entity, value);
+        ownerToEntityValuePairs[msg.sender][entity] = value;
 
         // TODO: Update indexer
     }
 
     function remove(uint256 entity) public virtual override onlyWriter {
-        Dict[] storage entityValuePairs = ownerToEntityValuePairs[msg.sender];
-        MapSet valueToEntities = ownerToValueToEntities[msg.sender];
-        Set entities = ownerToEntities[msg.sender];
+        // Remove entity from set
+        Set(ownerToEntities[msg.sender]).remove(entity);
+
+        // Remove the entity from valueToEntities map
+        MapSet(ownerToValueToEntities[msg.sender]).remove(uint256(keccak256(ownerToEntityValuePairs[msg.sender][entity])), entity);
 
         // Remove the entity from the entityValuePairs map
-        entityValuePairs.remove(entity);
-
-        // Remove the entity from the valueToEntities map
-        valueToEntities.remove(uint256(keccak256(entityValuePairs.get(entity))), entity);
-
-        // Remove the entity from the entities set
-        entities.remove(entity);
-
-        super._remove(entity);
+        delete ownerToEntityValuePairs[msg.sender][entity];
 
         // TODO: Update indexer
     }
 
     function has(uint256 entity, address owner) public view virtual override returns (bool) {
-        return ownerToEntities[owner].has(entity);
+        return Set(ownerToEntities[owner]).has(entity);
     }
 
     function getRawValue(uint256 entity, address owner) public view virtual override returns (bytes memory) {
-        return ownerToEntityValuePairs[owner].get(entity);
+        return ownerToEntityValuePairs[owner][entity];
     }
 
     function getEntities(address owner) public view virtual override returns (uint256[] memory) {
-        return ownerToEntities[owner].getItems();
+        return Set(ownerToEntities[owner]).getItems();
     }
 
     function getEntitiesWithValue(bytes memory value, address owner) public view virtual override returns (uint256[] memory) {
-        return ownerToValueToEntities[owner].getItems(uint256(keccak256(value)));
+        return MapSet(ownerToValueToEntities[owner]).getItems(uint256(keccak256(value)));
     }
 
     function transferOwnership(address newOwner) external override onlyOwner {

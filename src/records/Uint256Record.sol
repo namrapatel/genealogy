@@ -27,8 +27,8 @@ contract Uint256Record is Record {
         return value;
     }
 
-    function getEntitiesWithValue(uint256 value) public view returns (uint256[] memory) {
-        return getEntitiesWithValue(abi.encode(value));
+    function getEntitiesWithValue(uint256 value, address owner) public view returns (uint256[] memory) {
+        return getEntitiesWithValue(abi.encode(value), owner);
     }
 
 }

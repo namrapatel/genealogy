@@ -6,9 +6,14 @@ pragma solidity >=0.8.0;
  */
 contract Dict {
 
+    bool isInit = false;
     mapping(uint256 => bytes) private items;
     mapping(uint256 => uint256) private itemToIndex;
     uint256[] private itemKeys;
+
+    constructor() {
+        isInit = true;
+    }
     
     function add(uint256 key, bytes memory value) public {
         if (has(key)) return;

@@ -5,8 +5,13 @@ pragma solidity >=0.8.0;
  * Set of unique uint256
  */
 contract Set {
+  bool isInit = false;
   uint256[] private items;
   mapping(uint256 => uint256) private itemToIndex;
+
+  constructor() {
+    isInit = true;
+  }
 
   function add(uint256 item) public {
     if (has(item)) return;

@@ -5,8 +5,13 @@ pragma solidity >=0.8.0;
  * Key value store with uint256 key and uint256 Set value
  */
 contract MapSet {
+  bool isInit = false;
   mapping(uint256 => uint256[]) private items;
   mapping(uint256 => mapping(uint256 => uint256)) private itemToIndex;
+
+  constructor() {
+    isInit = true;
+  }
 
   function add(uint256 setKey, uint256 item) public {
     if (has(setKey, item)) return;
