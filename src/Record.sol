@@ -75,10 +75,10 @@ abstract contract Record is IRecord {
         }
 
         // Add entity to set
-        Set(ownerToEntities[msg.sender]).add(entity);
+        Set(ownerToEntities[msg.sender]).add(entity); // TODO: Do we need to check if Set is initialized?
 
         // Remove the entity from valueToEntities map
-        MapSet valueToEntities = MapSet(ownerToValueToEntities[msg.sender]);
+        MapSet valueToEntities = MapSet(ownerToValueToEntities[msg.sender]); // TODO: Do we need to check if MapSet is initialized?
         valueToEntities.remove(uint256(keccak256(ownerToEntityValuePairs[msg.sender][entity])), entity);
         // Add the entity to the valueToEntities map
         valueToEntities.add(uint256(keccak256(value)), entity);

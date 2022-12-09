@@ -121,14 +121,14 @@ abstract contract Procedure {
         subProcedureToOrderedRoleIds[subProcedure] = ids;
     }
 
-    function addSubProcedureToOrderedRoleIds(address subProcedure, string memory id) public {
-        subProcedureToOrderedRoleIds[subProcedure].push(id);
+    function addSubProcedureToOrderedRoleIds(address subProcedure, string memory _id) public {
+        subProcedureToOrderedRoleIds[subProcedure].push(_id);
     }
 
-    function removeSubProcedureToOrderedRoleIds(address subProcedure, string memory id) public {
+    function removeSubProcedureToOrderedRoleIds(address subProcedure, string memory _id) public {
         string[] storage ids = subProcedureToOrderedRoleIds[subProcedure];
         for(uint256 i = 0; i < ids.length; i++) {
-            if (keccak256(abi.encodePacked(ids[i])) == keccak256(abi.encodePacked(id))) {
+            if (keccak256(abi.encodePacked(ids[i])) == keccak256(abi.encodePacked(_id))) {
                 ids[i] = ids[ids.length - 1];
                 ids.pop();
                 break;
