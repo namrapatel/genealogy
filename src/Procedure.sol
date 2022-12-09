@@ -17,12 +17,13 @@ abstract contract Procedure {
         address[] memory _subProcedures, 
         uint8[] memory numIdsBySubProcedure,
         string[] memory ids,
-        uint256 memory id,
+        uint256 _id,
         string memory _idString
         ) {
         world = _world;
         subProcedures = _subProcedures;
         buildSubProcedureToOrderedRoleIds(numIdsBySubProcedure, ids);
+        id = _id;
         idString = _idString;
     }
 
@@ -31,20 +32,23 @@ abstract contract Procedure {
             for(uint256 i = 0; i < subProcedures.length; i++) {
                 address subProcedure = subProcedures[i];
                 Role[] memory roles = getRoles(subProcedure, entities);
-                bytes memory executionResult = _execute(roles);
+                bytes memory rolesToExecute = abi.encode(roles);
+                bytes memory executionResult = _execute(rolesToExecute);
                 result = abi.encodePacked(result, executionResult);
             }
             return result;
         } else {
             // This is the case where the procedure is a leaf node,
             // if _execute is not overridden, it will just return an empty bytes array
-            return _execute(getRoles(address(0), entities)); 
+            return _execute(bytes(0)); 
         }
     }
 
     // User would override this function if they have their own logic they want to implement
     // instead of just executing the subprocedures
-    function _execute(Role[] memory roles) public virtual returns (bytes memory result) {
+    function _execute(bytes memory arguments) public virtual returns (bytes memory result) {
+        (Role[] memory roles) = abi.decode(arguments, (Role[])); 
+
         for(uint256 i = 0; i < subProcedures.length; i++) {
             address subProcedure = subProcedures[i];
             uint256[] memory entities = rolesToEntities(roles);

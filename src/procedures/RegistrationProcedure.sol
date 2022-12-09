@@ -27,12 +27,11 @@ contract RegistrationProcedure is Procedure {
         "world.procedure.register"
     ) {}
 
-    function _execute(
-        address msgSender,
-        RegistrationType registrationType,
-        address addr,
-        uint256 id
-    ) public override returns (bytes memory) {
+    function _execute(bytes memory arguments) public override returns (bytes memory) {
+        (address msgSender, RegistrationType registrationType, address addr, uint256 id) = abi.decode(
+            arguments,
+            (address, RegistrationType, address, uint256)
+        );
 
         require(msg.sender == address(world), "RegistrationProcedure can only be called via World.");
         require(registrationType == RegistrationType.Record || registrationType == RegistrationType.Procedure, "Invalid type.");
