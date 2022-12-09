@@ -1,0 +1,192 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "execute",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "execute()": "61461954"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"execute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/Pure.sol\":\"Pure\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"src/Pure.sol\":{\"keccak256\":\"0x24c748e8cc185ba03e8651929de1d5d3ad8f7ff7b53fafe40edd1ace54752de0\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://41457e604a4cf1d4763c8257d2a25050cc2658cd6b28201126eff4723a2e2891\",\"dweb:/ipfs/QmRw6tQSp8fPU7wMRhU5SBgPRpzxUs3pwtDUKz8uQX59BR\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "execute"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/Pure.sol": "Pure"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/Pure.sol": {
+        "keccak256": "0x24c748e8cc185ba03e8651929de1d5d3ad8f7ff7b53fafe40edd1ace54752de0",
+        "urls": [
+          "bzz-raw://41457e604a4cf1d4763c8257d2a25050cc2658cd6b28201126eff4723a2e2891",
+          "dweb:/ipfs/QmRw6tQSp8fPU7wMRhU5SBgPRpzxUs3pwtDUKz8uQX59BR"
+        ],
+        "license": "UNLICENSED"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "src/Pure.sol",
+    "id": 1122,
+    "exportedSymbols": {
+      "Pure": [
+        1121
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "39:137:4",
+    "nodes": [
+      {
+        "id": 1112,
+        "nodeType": "PragmaDirective",
+        "src": "39:24:4",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".13"
+        ]
+      },
+      {
+        "id": 1121,
+        "nodeType": "ContractDefinition",
+        "src": "65:111:4",
+        "nodes": [
+          {
+            "id": 1116,
+            "nodeType": "FunctionDefinition",
+            "src": "95:22:4",
+            "nodes": [],
+            "body": {
+              "id": 1115,
+              "nodeType": "Block",
+              "src": "109:8:4",
+              "nodes": [],
+              "statements": []
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 1113,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "106:2:4"
+            },
+            "returnParameters": {
+              "id": 1114,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "109:0:4"
+            },
+            "scope": 1121,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "id": 1120,
+            "nodeType": "FunctionDefinition",
+            "src": "123:50:4",
+            "nodes": [],
+            "body": {
+              "id": 1119,
+              "nodeType": "Block",
+              "src": "157:16:4",
+              "nodes": [],
+              "statements": []
+            },
+            "functionSelector": "61461954",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "execute",
+            "nameLocation": "132:7:4",
+            "parameters": {
+              "id": 1117,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "139:2:4"
+            },
+            "returnParameters": {
+              "id": 1118,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "157:0:4"
+            },
+            "scope": 1121,
+            "stateMutability": "nonpayable",
+            "virtual": true,
+            "visibility": "public"
+          }
+        ],
+        "abstract": true,
+        "baseContracts": [],
+        "canonicalName": "Pure",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          1121
+        ],
+        "name": "Pure",
+        "nameLocation": "83:4:4",
+        "scope": 1122,
+        "usedErrors": []
+      }
+    ],
+    "license": "UNLICENSED"
+  },
+  "id": 4
+}

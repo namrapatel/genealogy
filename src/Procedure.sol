@@ -40,7 +40,7 @@ abstract contract Procedure {
         } else {
             // This is the case where the procedure is a leaf node,
             // if _execute is not overridden, it will just return an empty bytes array
-            return _execute(bytes(0)); 
+            return _execute(bytes("")); 
         }
     }
 
