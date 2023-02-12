@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import { Set } from "./Set.sol";
 import { Uint256Record } from "./records/Uint256Record.sol";
-import { RegistrationType, RegistrationProcedure, ID as registerationProcedureId } from "./procedures/RegistrationProcedure.sol";
+import { RegistrationType, RegistrationProcedure, ID as registrationProcedureId } from "./procedures/RegistrationProcedure.sol";
 
 uint256 constant recordsRecordId = uint256(keccak256("world.record.records"));
 uint256 constant proceduresRecordId = uint256(keccak256("world.record.procedures"));
@@ -23,7 +23,13 @@ contract World {
         _interactions = new Uint256Record(address(0), interactionsRecordId, "world.record.interactions");
         
         // Initialize registration procedure
-        registrator = new RegistrationProcedure(this, "world.procedure.register");
+        registrator = new RegistrationProcedure(
+            this,
+            new address[](0),
+            new uint8[](0),
+            new string[](0),
+            "world.procedure.register"
+        );
 
         // Authorize registration procedure to write to the list of records, procedures, and interactions
         _records.authorizeWriter(address(registrator));
@@ -35,7 +41,7 @@ contract World {
         _records.registerWorld(address(this));
         _procedures.registerWorld(address(this));
         _interactions.registerWorld(address(this));
-        registrator.execute(abi.encode(msg.sender, RegistrationType.Procedure, address(registrator), registerationProcedureId));
+        registrator.execute(abi.encode(msg.sender, RegistrationType.Procedure, address(registrator), registrationProcedureId));
     }
 
     function getRecords() public view returns (Uint256Record) {

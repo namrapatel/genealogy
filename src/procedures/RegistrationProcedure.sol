@@ -7,23 +7,25 @@ import { addressToEntity, entityToAddress } from "../utils.sol";
 import { IOwned } from "../interfaces/IOwned.sol";
 import { Uint256Record } from "../records/Uint256Record.sol";
 
-uint256 constant ID = uint256(keccak256(("world.procedure.register")));
-
 enum RegistrationType {
     Record,
     Procedure
 }
 
+uint256 constant ID = uint256(keccak256("world.procedure.register"));
+
 contract RegistrationProcedure is Procedure {
     constructor(
         World _world,
+        address[] memory _subProcedures,
+        uint8[] memory numIdsBySubProcedure,
+        string[] memory ids,
         string memory idString
     ) Procedure(
         _world,
-        new address[](0),
-        new uint8[](0),
-        new string[](0),
-        ID,
+        _subProcedures,
+        numIdsBySubProcedure,
+        ids,
         "world.procedure.register"
     ) {}
 
