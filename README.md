@@ -1,4 +1,4 @@
-# brush
+# genealogy
 
 A smart contract design pattern that aims to increase the separation of concerns between different types of contracts, such that relationships between particular contracts can be drawn out visibly in a client.
 
